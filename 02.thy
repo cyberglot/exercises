@@ -265,7 +265,8 @@ Write a tail-recursive variant of the @{text add} function on @{typ nat}:
 *}
 
 fun itadd :: "nat \<Rightarrow> nat \<Rightarrow> nat" where
-(* your definition/proof here *)
+  "itadd 0 x = x" |
+  "itadd (Suc n) x = itadd n (Suc x)"
 
 text{*
 Tail-recursive means that in the recursive case, @{const itadd} needs to call
@@ -274,7 +275,9 @@ Prove
 *}
 
 lemma "itadd m n = add m n"
-(* your definition/proof here *)
+  apply (induction m arbitrary:n)
+  apply auto
+done
 
 text{*
 \endexercise
