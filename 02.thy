@@ -76,14 +76,23 @@ an element in a list:
 *}
 
 fun count :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" where
+  "count Nil _ = 0" |
+  "count (h#t) x = (if x = h then Suc (count t x) else (count t x))"
 (* your definition/proof here *)
 text {*
 Test your definition of @{term count} on some examples.
 Prove the following inequality:
-*}
+  *}
+
+(* Add type constraints to force complete evaluation *)
+value "count [1, 2, 3] (1::nat)"
+value "count [] (1::nat)"
+value "count [3, 1, 2, 1, 0] (1::nat)"
 
 theorem "count xs x \<le> length xs"
-(* your definition/proof here *)
+  apply (induction xs)
+  apply auto
+done
 
 text{*
 \endexercise
