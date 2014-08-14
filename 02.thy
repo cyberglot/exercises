@@ -113,16 +113,37 @@ Convince yourself on some test cases that your definition
 of @{term snoc} behaves as expected.
 With the help of @{text snoc} define a recursive function @{text reverse}
 that reverses a list. Do not use the predefined function @{const rev}.
-*}
+  *}
+
+value "snoc [a, b]"
+
+lemma snoc_equal_at: "snoc l a = l @ [a]"
+  apply (induction l)
+  apply auto
+done
 
 fun reverse :: "'a list \<Rightarrow> 'a list" where
-(* your definition/proof here *)
+  "reverse [] = []" |
+  "reverse (h#t) = snoc (reverse t) h"
+
+lemma "reverse l = rev l"
+  apply (induction l)
+  apply (auto simp add: snoc_equal_at)
+done
 
 text {*
 Prove the following theorem. You will need an additional lemma.
-*}
+  *}
+
+lemma reverse_snoc: "reverse (snoc xs a) = a # (reverse xs)"
+  apply (induction xs)
+  apply auto
+done
+
 theorem "reverse (reverse xs) = xs"
-(* your definition/proof here *)
+  apply (induction xs)
+  apply (auto simp add: reverse_snoc)
+done
 
 text{*
 \endexercise
@@ -315,4 +336,3 @@ Hint: consider the hint in Exercise~\ref{exe:tree0}.
 *}
 
 end
-
