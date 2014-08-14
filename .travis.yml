@@ -1,0 +1,7 @@
+language: isabelle
+before_install:
+  - wget http://isabelle.in.tum.de/dist/Isabelle2013-2_linux.tar.gz
+  - tar xf Isabelle2013-2_linux.tar.gz -C /opt/
+  - /opt/Isabelle2013-2/bin/isabelle install /usr/local/bin
+script:
+  - isabelle build -D .
