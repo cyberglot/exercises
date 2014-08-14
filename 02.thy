@@ -36,7 +36,7 @@ lemma add_assoc: "add (add m n) p = add m (add n p)"
   apply (induction m)
   apply auto
   done
-    
+
 lemma add_zero [simp]: "add p 0 = p"
   apply(induction p)
   apply auto
@@ -51,7 +51,7 @@ lemma add_comm: "add m n = add n m"
   apply (induction n)
   apply auto
 done
-  
+
 text{* Define a recursive function *}
 
 fun double :: "nat \<Rightarrow> nat" where
@@ -95,6 +95,8 @@ Do not use the existing append operator @{text "@"} for lists.
 *}
 
 fun snoc :: "'a list \<Rightarrow> 'a \<Rightarrow> 'a list" where
+  "snoc [] x = [x]" |
+  "snoc (h#t) x = h # (snoc t x) "
 (* your definition/proof here *)
 
 text {*
