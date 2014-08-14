@@ -1,4 +1,4 @@
-theory Chapter2
+theory 02
 imports Main
 begin
 
