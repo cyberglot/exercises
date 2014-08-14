@@ -184,19 +184,23 @@ without removing duplicates.
 datatype 'a tree = Tip | Node "'a tree" 'a "'a tree"
 
 fun contents :: "'a tree \<Rightarrow> 'a list" where
-(* your definition/proof here *)
+  "contents Tip = []" |
+  "contents (Node l v r) = v # ((contents l) @ (contents r))"
 
 text{*
 Then define a function that sums up all values in a tree of natural numbers
 *}
 
 fun treesum :: "nat tree \<Rightarrow> nat" where
-(* your definition/proof here *)
+  "treesum Tip = 0" |
+  "treesum (Node l v r) = v + (treesum l) + (treesum r)"
 
 text{* and prove *}
 
 lemma "treesum t = listsum(contents t)"
-(* your definition/proof here *)
+  apply (induction t)
+  apply auto
+done
 
 text{*
 \endexercise
