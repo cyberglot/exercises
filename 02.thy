@@ -208,20 +208,30 @@ text{*
 \exercise
 Define a new type @{text "'a tree2"} of binary trees where values are also
 stored in the leaves of the tree.  Also reformulate the
-@{text mirror} function accordingly. Define two functions *}
+  @{text mirror} function accordingly. Define two functions *}
+
+datatype 'a tree2 = Tip2 'a | Node2 "'a tree2" 'a "'a tree2"
+
+fun mirror :: "'a tree2 \<Rightarrow> 'a tree2" where
+  "mirror (Tip2 v) = (Tip2 v)" |
+  "mirror (Node2 l v r) = Node2 (mirror r) v (mirror l)"
 
 fun pre_order :: "'a tree2 \<Rightarrow> 'a list" where
-(* your definition/proof here *)
+  "pre_order (Tip2 v) = [v]" |
+  "pre_order (Node2 l v r) = v # ((pre_order l) @ (pre_order r))"
 
 fun post_order :: "'a tree2 \<Rightarrow> 'a list" where
-(* your definition/proof here *)
+  "post_order (Tip2 v) = [v]" |
+  "post_order (Node2 l v r) = (post_order l) @ (post_order r) @ [v]"
 
 text{*
 that traverse a tree and collect all stored values in the respective order in
 a list. Prove *}
 
 lemma "pre_order (mirror t) = rev (post_order t)"
-(* your definition/proof here *)
+  apply (induction t)
+  apply auto
+done
 
 text{*
 \endexercise
