@@ -241,7 +241,9 @@ Define a recursive function
 *}
 
 fun intersperse :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-(* your definition/proof here *)
+  "intersperse _ [] = []" |
+  "intersperse _ [x] = [x]" |
+  "intersperse v (h#t) = h # v # (intersperse v t)"
 
 text{*
 such that @{text "intersperse a [x\<^sub>1, ..., x\<^sub>n] = [x\<^sub>1, a, x\<^sub>2, a, ..., a, x\<^sub>n]"}.
@@ -249,7 +251,10 @@ Prove
 *}
 
 lemma "map f (intersperse a xs) = intersperse (f a) (map f xs)"
-(* your definition/proof here *)
+  apply (induction xs rule:intersperse.induct)
+  apply (auto)
+done
+
 
 text{*
 \endexercise
