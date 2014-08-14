@@ -156,15 +156,20 @@ Define a recursive function @{text "sum n = 0 + ... + n"}:
 *}
 
 fun sum :: "nat \<Rightarrow> nat" where
-(* your definition/proof here *)
+  "sum 0 = 0" |
+  "sum (Suc n) = (sum n) + (Suc n)"
 
 text {*
 Now prove the summation formula by induction on @{text "n"}.
 First, write a clear but informal proof by hand following the examples
 in the main text. Then prove the same property in Isabelle:
-*}
+  *}
 
-lemma "sum n = n * (n+1) div 2"
+lemma "sum n = n * (add n 1) div 2"
+  apply (induction n)
+  apply (auto)
+done
+
 (* your definition/proof here *)
 
 text{*
