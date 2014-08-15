@@ -76,7 +76,7 @@ an element in a list:
 *}
 
 fun count :: "'a list \<Rightarrow> 'a \<Rightarrow> nat" where
-  "count Nil _ = 0" |
+  "count Nil x = 0" |
   "count (h#t) x = (if x = h then Suc (count t x) else (count t x))"
 (* your definition/proof here *)
 text {*
@@ -241,8 +241,8 @@ Define a recursive function
 *}
 
 fun intersperse :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
-  "intersperse _ [] = []" |
-  "intersperse _ [x] = [x]" |
+  "intersperse v [] = []" |
+  "intersperse v [x] = [x]" |
   "intersperse v (h#t) = h # v # (intersperse v t)"
 
 text{*
@@ -337,7 +337,7 @@ Define a function @{text eval} that evaluates an expression at some value:
 
 fun eval :: "exp \<Rightarrow> int \<Rightarrow> int" where
   "eval Var x = x" |
-  "eval (Const i) _ = i" |
+  "eval (Const i) x = i" |
   "eval (Add l r) x = (eval l x) + (eval r x)" |
   "eval (Mult l r) x = (eval l x) * (eval r x)"
 
@@ -351,7 +351,7 @@ Define a function @{text evalp} that evaluates a polynomial at a given value:
   *}
 
 fun evalp' :: "int list \<Rightarrow> nat \<Rightarrow> int \<Rightarrow> int" where
-  "evalp' [] _ _ = 0" |
+  "evalp' [] e x = 0" |
   "evalp' (h#t) e x = (h * (x ^ e)) + (evalp' t (Suc e) x)"
 
 fun evalp :: "int list \<Rightarrow> int \<Rightarrow> int" where
@@ -389,7 +389,7 @@ lemma evalp_add: "evalp' (addp l r) e x = evalp' l e x + evalp' r e x"
 done
 
 fun multc :: "int \<Rightarrow> int list \<Rightarrow> int list" where
-  "multc _ [] = []" |
+  "multc c [] = []" |
   "multc c (h#t) = (c * h)#(multc c t)"
 
 (* Evaluation under constant multiplication *)
