@@ -50,9 +50,15 @@ constants in an expression by zeroes (they will be optimized away later):
 *}
 
 fun sumN :: "aexp \<Rightarrow> int" where
+  "sumN (V x) = 0" |
+  "sumN (N c) = c" |
+  "sumN (Plus l r) = sumN l + sumN r"
 (* your definition/proof here *)
 
 fun zeroN :: "aexp \<Rightarrow> aexp" where
+  "zeroN (V x) = (V x)" |
+  "zeroN (N c) = (N 0)" |
+  "zeroN (Plus l r) = Plus (zeroN l) (zeroN r)"
 (* your definition/proof here *)
 
 text {*
@@ -62,10 +68,13 @@ that adds the results of @{const sumN} and @{const zeroN}. Prove that
 *}
 
 definition sepN :: "aexp \<Rightarrow> aexp" where
+  "sepN exp = Plus (N (sumN exp)) (zeroN exp)"
 (* your definition/proof here *)
 
 lemma aval_sepN: "aval (sepN t) s = aval t s"
-(* your definition/proof here *)
+  apply (induction t)
+  apply (auto simp add:sepN_def)
+done
 
 text {*
 Finally, define a function @{text full_asimp} that uses @{const asimp}
@@ -74,11 +83,13 @@ Prove that it preserves the value of an arithmetic expression.
 *}
 
 definition full_asimp :: "aexp \<Rightarrow> aexp" where
+  "full_asimp exp = asimp (sepN exp)"
 (* your definition/proof here *)
 
 lemma aval_full_asimp: "aval (full_asimp t) s = aval t s"
-(* your definition/proof here *)
-
+  apply (induction t)
+  apply (auto simp add:full_asimp_def sepN_def split:aexp.split)
+done
 
 
 text{*
@@ -234,7 +245,7 @@ fun pbval :: "pbexp \<Rightarrow> (vname \<Rightarrow> bool) \<Rightarrow> bool"
 "pbval (VAR x) s = s x"  |
 "pbval (NOT b) s = (\<not> pbval b s)" |
 "pbval (AND b1 b2) s = (pbval b1 s \<and> pbval b2 s)" |
-"pbval (OR b1 b2) s = (pbval b1 s \<or> pbval b2 s)" 
+"pbval (OR b1 b2) s = (pbval b1 s \<or> pbval b2 s)"
 
 text {* Define a function that checks whether a boolean exression is in NNF
 (negation normal form), i.e., if @{const NOT} is only applied directly
@@ -399,4 +410,3 @@ text{*
 *}
 
 end
-
