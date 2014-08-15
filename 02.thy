@@ -288,18 +288,21 @@ Define a datatype @{text tree0} of binary tree skeletons which do not store
 any information, neither in the inner nodes nor in the leaves.
 Define a function that counts the number of all nodes (inner nodes and leaves)
 in such a tree:
-*}
+  *}
+
+datatype tree0 = Tip | Node tree0 tree0
 
 fun nodes :: "tree0 \<Rightarrow> nat" where
-(* your definition/proof here *)
+  "nodes Tip = 1" |
+  "nodes (Node l r) = 1 + (nodes l) + (nodes r)"
 
 text {*
 Consider the following recursive function:
 *}
 
 fun explode :: "nat \<Rightarrow> tree0 \<Rightarrow> tree0" where
-"explode 0 t = t" |
-"explode (Suc n) t = explode n (Node t t)"
+  "explode 0 t = t" |
+  "explode (Suc n) t = explode n (Node t t)"
 
 text {*
 Experiment how @{text explode} influences the size of a binary tree
@@ -312,7 +315,12 @@ operator ``@{text"^"}''. For example, \noquotes{@{prop [source] "2 ^ 2 = 4"}}.
 Hint: simplifying with the list of theorems @{thm[source] algebra_simps}
 takes care of common algebraic properties of the arithmetic operators.
 \endexercise
-*}
+  *}
+
+theorem "nodes (explode n t) = ((2^n) * nodes(t)) + (2^n)- 1"
+  apply (induction n arbitrary:t)
+  apply (auto simp add:algebra_simps)
+done
 
 text{*
 
