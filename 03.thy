@@ -102,7 +102,10 @@ by an expression in an expression. Define a substitution function
 *}
 
 fun subst :: "vname \<Rightarrow> aexp \<Rightarrow> aexp \<Rightarrow> aexp" where
-(* your definition/proof here *)
+  "subst x e (N c) = (N c)" |
+  "subst x e (V x') = (if x = x' then e else (V x'))" |
+  "subst x e (Plus l r) = Plus (subst x e l) (subst x e r)"
+
 
 text{*
 such that @{term "subst x a e"} is the result of replacing
@@ -115,7 +118,9 @@ substitute first and evaluate afterwards or evaluate with an updated state:
 *}
 
 lemma subst_lemma: "aval (subst x a e) s = aval e (s(x := aval a s))"
-(* your definition/proof here *)
+  apply (induction e)
+  apply auto
+done
 
 text {*
 As a consequence prove that we can substitute equal expressions by equal expressions
@@ -123,7 +128,8 @@ and obtain the same result under evaluation:
 *}
 lemma "aval a1 s = aval a2 s
   \<Longrightarrow> aval (subst x a1 e) s = aval (subst x a2 e) s"
-(* your definition/proof here *)
+  apply (auto simp add:subst_lemma)
+done
 
 text{*
 \endexercise
@@ -153,6 +159,14 @@ division by changing the return type of @{text aval2} to
 @{typ "(val \<times> state) option"}. In case of division by 0 let @{text aval2}
 return @{const None}. Division on @{typ int} is the infix @{text div}.
 *}
+
+datatype aexp2 = N2 int | V2 name | Plus2 aexp2 aexp2 | Inc2 name
+
+fun aval2 :: "aexp2 \<Rightarrow> state \<Rightarrow> val \<times> state" where
+  "aval2 s (N2 c) = (s, c)" |
+  "aval2 s (V2 v) = (s, s v)" |
+  "aval2 s (Plus2 l r) = let (s', l') = aval2 s l in l' + (aval2 s' r)"
+
 
 text{*
 \endexercise
