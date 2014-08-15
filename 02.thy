@@ -336,7 +336,10 @@ Define a function @{text eval} that evaluates an expression at some value:
 *}
 
 fun eval :: "exp \<Rightarrow> int \<Rightarrow> int" where
-(* your definition/proof here *)
+  "eval Var x = x" |
+  "eval (Const i) _ = i" |
+  "eval (Add l r) x = (eval l x) + (eval r x)" |
+  "eval (Mult l r) x = (eval l x) * (eval r x)"
 
 text{*
 For example, @{prop"eval (Add (Mult (Const 2) Var) (Const 3)) i = 2*i+3"}.
@@ -345,25 +348,80 @@ A polynomial can be represented as a list of coefficients, starting with
 the constant. For example, @{term "[4, 2, -1, 3::int]"} represents the
 polynomial $4 + 2x - x^2 + 3x^3$.
 Define a function @{text evalp} that evaluates a polynomial at a given value:
-*}
+  *}
+
+fun evalp' :: "int list \<Rightarrow> nat \<Rightarrow> int \<Rightarrow> int" where
+  "evalp' [] _ _ = 0" |
+  "evalp' (h#t) e x = (h * (x ^ e)) + (evalp' t (Suc e) x)"
 
 fun evalp :: "int list \<Rightarrow> int \<Rightarrow> int" where
-(* your definition/proof here *)
+  "evalp coeffs x = evalp' coeffs 0 x"
+
+lemma evalp_suc: "x * (evalp' l e x) = (evalp' (0#l) e x)"
+  apply (induction l arbitrary: e)
+  apply (auto simp add: algebra_simps)
+done
+
+lemma evalp_factorise_simple: "evalp' l (Suc e) x = x * evalp' l e x"
+  apply (induction e arbitrary:l)
+  apply (auto simp add: algebra_simps evalp_suc)
+done
+
+lemma evalp_commut_simple: "evalp' l 0 x * evalp' r e x = evalp' r 0 x * evalp' l e x"
+  apply (induction e)
+  apply (auto simp add:algebra_simps evalp_factorise_simple)
+done
 
 text{*
 Define a function @{text coeffs} that transforms an expression into a polynomial.
 This will require auxiliary functions.
-*}
+  *}
+
+fun addp :: "int list \<Rightarrow> int list \<Rightarrow> int list" where
+  "addp [] r = r" |
+  "addp l [] = l" |
+  "addp (lh#lt) (rh#rt) = (lh+rh)#(addp lt rt)"
+
+(* Evaluation under addition *)
+lemma evalp_add: "evalp' (addp l r) e x = evalp' l e x + evalp' r e x"
+  apply (induction l r arbitrary:e rule:addp.induct)
+  apply (auto simp add:algebra_simps)
+done
+
+fun multc :: "int \<Rightarrow> int list \<Rightarrow> int list" where
+  "multc _ [] = []" |
+  "multc c (h#t) = (c * h)#(multc c t)"
+
+(* Evaluation under constant multiplication *)
+lemma evalp_multc: "evalp' (multc c l) e x = c * (evalp' l e x)"
+  apply (induction l arbitrary:e)
+  apply (auto simp add: algebra_simps)
+done
+
+fun multp :: "int list \<Rightarrow> int list \<Rightarrow> int list" where
+  "multp [] r = []" |
+  "multp (l#t) r = addp (multc l r) (multp t (0#r))"
+
+(* Evaluation under multiplication *)
+lemma evalp_multp: "evalp' (multp l r) 0 x = (evalp' l 0 x) * (evalp' r 0 x)"
+  apply (induction l arbitrary: r e1 e2)
+  apply (auto simp add:algebra_simps evalp_multc evalp_add evalp_commut_simple)
+done
 
 fun coeffs :: "exp \<Rightarrow> int list" where
-(* your definition/proof here *)
+  "coeffs (Const i) = [i]" |
+  "coeffs Var = [0, 1]" |
+  "coeffs (Add l r) = addp (coeffs l) (coeffs r)" |
+  "coeffs (Mult l r) = multp (coeffs l) (coeffs r)"
 
 text{*
 Prove that @{text coeffs} preserves the value of the expression:
-*}
+  *}
 
 theorem evalp_coeffs: "evalp (coeffs e) x = eval e x"
-(* your definition/proof here *)
+  apply (induction e rule:coeffs.induct)
+  apply (auto simp add:algebra_simps evalp_add evalp_multp)
+done
 
 text{*
 Hint: consider the hint in Exercise~\ref{exe:tree0}.
