@@ -160,13 +160,18 @@ division by changing the return type of @{text aval2} to
 return @{const None}. Division on @{typ int} is the infix @{text div}.
 *}
 
-datatype aexp2 = N2 int | V2 name | Plus2 aexp2 aexp2 | Inc2 name
+datatype aexp2 = N2 int | V2 vname | Plus2 aexp2 aexp2 | Inc2 vname | Div2 aexp2 aexp2
 
-fun aval2 :: "aexp2 \<Rightarrow> state \<Rightarrow> val \<times> state" where
-  "aval2 s (N2 c) = (s, c)" |
-  "aval2 s (V2 v) = (s, s v)" |
-  "aval2 s (Plus2 l r) = let (s', l') = aval2 s l in l' + (aval2 s' r)"
-
+fun aval2 :: "aexp2 \<Rightarrow> state \<Rightarrow> (val \<times> state) option" where
+  "aval2 (N2 c) s = Some (c, s)" |
+  "aval2 (V2 x) s = Some (s x, s)" |
+  "aval2 (Plus2 l r) s = (case (aval2 l s) of None \<Rightarrow> None
+  | Some (l', s') \<Rightarrow> (case (aval2 r s') of None \<Rightarrow> None
+  | Some (r', s'') \<Rightarrow> Some (l' + r', s'')))" |
+  "aval2 (Inc2 x) s = (let v = s x in Some (v, s(x := v + 1)))"  |
+  "aval2 (Div2 l r) s = (case (aval2 l s) of None \<Rightarrow> None
+  | Some (l', s') \<Rightarrow> (case (aval2 r s') of None \<Rightarrow> None
+  | Some (r', s'') \<Rightarrow> (if r' = 0 then None else Some (l' div r', s''))))"
 
 text{*
 \endexercise
