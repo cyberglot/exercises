@@ -4,7 +4,7 @@ before_install:
   - sudo tar xf Isabelle2013-2_linux.tar.gz -C /opt/
   - sudo /opt/Isabelle2013-2/bin/isabelle install /usr/local/bin
   # Build basic theories
-  - sudo isabelle build Pure
-  - sudo isabelle build HOL
+  - sudo isabelle build -v Pure
+  - sudo isabelle build -v HOL
 script:
-  - isabelle build -D .
+  - isabelle build -v -D .
