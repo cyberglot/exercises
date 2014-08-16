@@ -182,6 +182,23 @@ The following type adds a @{text LET} construct to arithmetic expressions:
 
 datatype lexp = Nl int | Vl vname | Plusl lexp lexp | LET vname lexp lexp
 
+fun lval :: "lexp \<Rightarrow> state \<Rightarrow> int" where
+  "lval (Nl c) s = c" |
+  "lval (Vl x) s = s x" |
+  "lval (Plusl l r) s = (lval l s) + (lval r s)" |
+  "lval (LET x e b) s = lval b (s(x := lval e s))"
+
+fun inline :: "lexp \<Rightarrow> aexp" where
+  "inline (Nl c) = (N c)" |
+  "inline (Vl x) = (V x)" |
+  "inline (Plusl l r) = Plus (inline l) (inline r)" |
+  "inline (LET x e b) = subst x (inline e) (inline b)"
+
+lemma "lval e s = aval (inline e) s"
+  apply (induction e arbitrary: s)
+  apply (auto simp add:subst_lemma)
+done
+
 text{* The @{const LET} constructor introduces a local variable:
 the value of @{term "LET x e\<^sub>1 e\<^sub>2"} is the value of @{text e\<^sub>2}
 in the state where @{text x} is bound to the value of @{text e\<^sub>1} in the original state.
