@@ -1,6 +1,6 @@
 Module Basics.
 
-  Definition nandb (b1: bool) (b2: bool) : bool :=
+  Definition nandb (b1: bool) (b2: bool): bool :=
     match b1, b2 with
       | false, _ => true
       | _, false => true
@@ -31,7 +31,7 @@ Module Basics.
   Example test_andb34: (andb3 true true false) = false.
   Proof. reflexivity. Qed.
 
-  Fixpoint factorial (n:nat) : nat :=
+  Fixpoint factorial (n: nat): nat :=
     match n with
       | 0 => 1
       | S n' => n * (factorial n')
@@ -42,7 +42,7 @@ Module Basics.
   Example test_factorial2: (factorial 5) = (mult 10 12).
   Proof. reflexivity. Qed.
 
-  Definition blt_nat (n m : nat) : bool :=
+  Definition blt_nat (n m: nat): bool :=
     match m - n with
       | O => false
       | S _ => true
