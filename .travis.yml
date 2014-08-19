@@ -1,0 +1,5 @@
+language: coq
+before_install:
+  - sudo apt-get update -yy
+  - sudo apt-get install coq
+script: make validate
