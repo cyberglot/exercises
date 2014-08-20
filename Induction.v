@@ -106,4 +106,29 @@ Module Induction.
     Case "n = n' + 1". simpl. rewrite IHn'. rewrite plus_n_Sm. reflexivity.
   Qed.
 
+  Theorem plus_swap: forall n m p: nat, n + (m + p) = m + (n + p).
+  Proof.
+    intros n m p.
+    rewrite plus_assoc.
+    assert (R: m + (n + p) = m + n + p). rewrite plus_assoc. reflexivity.
+    rewrite R.
+    assert (H: n + m = m + n). rewrite plus_comm. reflexivity.
+    rewrite H. reflexivity.
+  Qed.
+
+  Theorem mult_n_Sm: forall n m: nat, n + n * m = n * S m.
+  Proof.
+    intros n m.
+    induction n as [| n'].
+    Case "n = 0". reflexivity.
+    Case "n = n' + 1". simpl. rewrite plus_swap. rewrite IHn'. reflexivity.
+  Qed.
+
+  Theorem mult_comm: forall n m: nat, n * m = m * n.
+  Proof.
+    intros n m. induction n as [| n'].
+    Case "n = 0". rewrite Basics.mult_0_l. rewrite mult_0_r. reflexivity.
+    Case "n = n' + 1". simpl. rewrite IHn'. rewrite mult_n_Sm. reflexivity.
+  Qed.
+
 End Induction.
