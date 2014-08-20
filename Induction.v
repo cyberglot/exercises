@@ -131,4 +131,22 @@ Module Induction.
     Case "n = n' + 1". simpl. rewrite IHn'. rewrite mult_n_Sm. reflexivity.
   Qed.
 
+  Theorem evenb_n__oddb_Sn:
+    forall n: nat, Basics.evenb n = negb (Basics.evenb (S n)).
+  Proof.
+    intros n. induction n as [| n'].
+    Case "n = 0". reflexivity.
+    Case "n = n' + 1". simpl.
+    destruct n' as [| n''].
+    SCase "n' = n". reflexivity.
+    SCase "n' = n'' + 1 (n = n' + 1 + 1)".
+    rewrite IHn'.
+    assert (Neg: forall b: bool, negb (negb b) = b).
+    SSCase "Assert double negation".
+    intros b. destruct b.
+    SSSCase "b". reflexivity.
+    SSSCase "not b". reflexivity.
+    rewrite Neg. reflexivity.
+  Qed.
+
 End Induction.
