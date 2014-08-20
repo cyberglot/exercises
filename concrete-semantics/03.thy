@@ -26,7 +26,7 @@ is optimal:
 lemma "optimal (asimp_const a)"
   apply (induction a)
   apply (auto split:aexp.split)
-done
+  done
 
 text{*
 This proof needs the same @{text "split:"} directive as the correctness proof of
@@ -74,7 +74,7 @@ definition sepN :: "aexp \<Rightarrow> aexp" where
 lemma aval_sepN: "aval (sepN t) s = aval t s"
   apply (induction t)
   apply (auto simp add:sepN_def)
-done
+  done
 
 text {*
 Finally, define a function @{text full_asimp} that uses @{const asimp}
@@ -89,7 +89,7 @@ definition full_asimp :: "aexp \<Rightarrow> aexp" where
 lemma aval_full_asimp: "aval (full_asimp t) s = aval t s"
   apply (induction t)
   apply (auto simp add:full_asimp_def sepN_def split:aexp.split)
-done
+  done
 
 
 text{*
@@ -120,7 +120,7 @@ substitute first and evaluate afterwards or evaluate with an updated state:
 lemma subst_lemma: "aval (subst x a e) s = aval e (s(x := aval a s))"
   apply (induction e)
   apply auto
-done
+  done
 
 text {*
 As a consequence prove that we can substitute equal expressions by equal expressions
@@ -129,7 +129,7 @@ and obtain the same result under evaluation:
 lemma "aval a1 s = aval a2 s
   \<Longrightarrow> aval (subst x a1 e) s = aval (subst x a2 e) s"
   apply (auto simp add:subst_lemma)
-done
+  done
 
 text{*
 \endexercise
@@ -197,7 +197,7 @@ fun inline :: "lexp \<Rightarrow> aexp" where
 lemma "lval e s = aval (inline e) s"
   apply (induction e arbitrary: s)
   apply (auto simp add:subst_lemma)
-done
+  done
 
 text{* The @{const LET} constructor introduces a local variable:
 the value of @{term "LET x e\<^sub>1 e\<^sub>2"} is the value of @{text e\<^sub>2}
