@@ -31,6 +31,15 @@ Module Basics.
   Example test_andb34: (andb3 true true false) = false.
   Proof. reflexivity. Qed.
 
+  Fixpoint evenb (n:nat): bool :=
+    match n with
+      | O => true
+      | S O => false
+      | S (S n') => evenb n'
+    end.
+
+  Definition oddb (n:nat): bool := negb (evenb n).
+
   Fixpoint factorial (n: nat): nat :=
     match n with
       | 0 => 1
