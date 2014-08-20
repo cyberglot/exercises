@@ -218,20 +218,22 @@ Show that equality and less-or-equal tests on @{text aexp} are definable
 *}
 
 definition Le :: "aexp \<Rightarrow> aexp \<Rightarrow> bexp" where
-(* your definition/proof here *)
+  "Le l r = Not (Less r l)"
 
 definition Eq :: "aexp \<Rightarrow> aexp \<Rightarrow> bexp" where
-(* your definition/proof here *)
+  "Eq l r = And (Not (Less l r)) (Not ((Less r l)))"
 
 text{*
 and prove that they do what they are supposed to:
 *}
 
 lemma bval_Le: "bval (Le a1 a2) s = (aval a1 s \<le> aval a2 s)"
-(* your definition/proof here *)
+  apply (auto simp add: Le_def)
+  done
 
 lemma bval_Eq: "bval (Eq a1 a2) s = (aval a1 s = aval a2 s)"
-(* your definition/proof here *)
+  apply (auto simp add: Eq_def)
+  done
 
 text{*
 \endexercise
