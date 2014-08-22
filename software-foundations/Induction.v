@@ -536,7 +536,12 @@ Qed.
 Theorem plus_swap' : forall n m p : nat,
   n + (m + p) = m + (n + p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m p.
+  rewrite plus_assoc. rewrite plus_assoc.
+  replace (n + m) with (m + n).
+  reflexivity.
+  rewrite plus_comm. reflexivity.
+Qed.
 (** [] *)
 
 
@@ -553,7 +558,36 @@ Proof.
     wanting to change your original definitions to make the property
     easier to prove, feel free to do so.) *)
 
-(* FILL IN HERE *)
+
+Inductive bin: Type :=
+| X: bin
+| T: bin -> bin
+| TP: bin -> bin.
+
+Fixpoint bin_inc (b: bin): bin :=
+  match b with
+    | X => TP X
+    | T b' => TP b'
+    | TP b' => T (bin_inc b')
+  end.
+
+Fixpoint bin_to_nat (b: bin): nat :=
+  match b with
+    | X => 0
+    | T b' => 2 * (bin_to_nat b')
+    | TP b' => 1 + (2 * (bin_to_nat b'))
+  end.
+
+Theorem bin_nat_commut: forall b: bin,
+                          bin_to_nat (bin_inc b) = S (bin_to_nat b).
+  intros b. induction b as [| b'| b'].
+  Case "b = X". reflexivity.
+  Case "x = T x'". reflexivity.
+  Case "x = TP x'".
+  simpl. rewrite IHb'.
+  simpl. rewrite <- plus_n_Sm.
+  reflexivity.
+Qed.
 (** [] *)
 
 
@@ -580,7 +614,7 @@ Proof.
 
     Again, feel free to change your earlier definitions if this helps
     here.
-*)
+ *)
 
 (* FILL IN HERE *)
 (** [] *)
