@@ -616,7 +616,19 @@ Qed.
     here.
  *)
 
-(* FILL IN HERE *)
+Fixpoint nat_to_bin (n: nat): bin :=
+  match n with
+    | O => X
+    | (S n) => bin_inc (nat_to_bin n)
+  end.
+
+Lemma nat_to_bin_involutive: forall n: nat, bin_to_nat (nat_to_bin n) = n.
+Proof.
+  intros n. induction n as [| n'].
+  Case "n = 0". reflexivity.
+  Case "n = S n'". simpl. rewrite bin_nat_commut. rewrite IHn'. reflexivity.
+Qed.
+
 (** [] *)
 
 (* ###################################################################### *)
