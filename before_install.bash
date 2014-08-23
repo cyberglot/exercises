@@ -17,22 +17,11 @@ install-isabelle() {
   sudo /opt/Isabelle2013-2/bin/isabelle install /usr/local/bin
 }
 
-install-coq() {
-  cd /tmp
-  wget "http://coq.inria.fr/distrib/V8.4pl4/files/coq-8.4pl4.tar.gz"
-  tar xf coq-8.4pl4.tar.gz
-  cd coq-8.4pl4
-  ./configure -prefix /usr/local
-  make
-  sudo make install
-}
-
 case "${EXERCISES}" in
   concrete-semantics)
     # Install Isabelle for Concrete Semantics exercises
     sudo apt-get install lib32stdc++6 # PolyML is faster on 32 bit
     install-isabelle;;
   software-foundations)
-    sudo apt-get install ocaml-native-compilers camlp5
-    install-coq;;
+    sudo apt-get install ocaml-native-compilers camlp5 coq;;
 esac
