@@ -6,7 +6,6 @@ Exercises from [Software Foundations][] in[Coq][].
 To build:
 
 ```console
-$ coq_makefile -o Makefile -install none *.v
 $ make
 ```
 

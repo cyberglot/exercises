@@ -11,8 +11,6 @@ before_install:
   - sudo chown -R root:root /opt/Isabelle2013-2
   - /opt/Isabelle2013-2/bin/isabelle install /usr/local/bin
 script:
-  - cd "${TRAVIS_BUILD_DIR}/software-foundations"
-  - coq_makefile -o Makefile -install none *.v
-  - make validate
+  - make -C "${TRAVIS_BUILD_DIR}/software-foundations" validate
   - cd "${TRAVIS_BUILD_DIR}/concrete-semantics"
   - isabelle build -D . -v

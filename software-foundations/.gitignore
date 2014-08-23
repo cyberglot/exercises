@@ -1,3 +1,7 @@
+# Coq build files
 *.glob
 *.vo
 *.v.d
+
+# Coq-generated Makefile
+/coq.mk
