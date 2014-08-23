@@ -5,3 +5,7 @@ script:
 env:
   - EXERCISES=software-foundations
   - EXERCISES=concrete-semantics
+# Don't build concrete-semantics, because Isabelle is so f****** slow
+matrix:
+  exclude:
+    - env: EXERCISES=concrete-semantics
