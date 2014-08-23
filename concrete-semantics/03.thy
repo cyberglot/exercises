@@ -246,23 +246,35 @@ datatype ifexp = Bc2 bool | If ifexp ifexp ifexp | Less2 aexp aexp
 text {*  First define an evaluation function analogously to @{const bval}: *}
 
 fun ifval :: "ifexp \<Rightarrow> state \<Rightarrow> bool" where
-(* your definition/proof here *)
+  "ifval (Bc2 b) s = b" |
+  "ifval (If t l r) s = (if (ifval t s) then (ifval l s) else (ifval r s))" |
+  "ifval (Less2 l r) s = (aval l s < aval r s)"
 
 text{* Then define two translation functions *}
 
 fun b2ifexp :: "bexp \<Rightarrow> ifexp" where
-(* your definition/proof here *)
+  "b2ifexp (Bc b) = (Bc2 b)" |
+  "b2ifexp (Not b) = (If (b2ifexp b) (Bc2 False) (Bc2 True))" |
+  "b2ifexp (And l r) = (If (b2ifexp l) (b2ifexp r) (Bc2 False))" |
+  "b2ifexp (Less l r) = (Less2 l r)"
 
 fun if2bexp :: "ifexp \<Rightarrow> bexp" where
-(* your definition/proof here *)
+  "if2bexp (Bc2 b) = (Bc b)" |
+  "if2bexp (If t l r) = (Not (And (Not (And (if2bexp t) (if2bexp l)))
+                                  (Not (And (Not (if2bexp t)) (if2bexp r)))))" |
+  "if2bexp (Less2 l r) = (Less l r)"
 
 text{* and prove their correctness: *}
 
 lemma "bval (if2bexp exp) s = ifval exp s"
-(* your definition/proof here *)
+  apply (induction exp)
+  apply (auto)
+done
 
 lemma "ifval (b2ifexp exp) s = bval exp s"
-(* your definition/proof here *)
+  apply (induction exp)
+  apply (auto)
+done
 
 text{*
 \endexercise
@@ -280,17 +292,21 @@ as can be seen from the evaluation function:
 *}
 
 fun pbval :: "pbexp \<Rightarrow> (vname \<Rightarrow> bool) \<Rightarrow> bool" where
-"pbval (VAR x) s = s x"  |
-"pbval (NOT b) s = (\<not> pbval b s)" |
-"pbval (AND b1 b2) s = (pbval b1 s \<and> pbval b2 s)" |
-"pbval (OR b1 b2) s = (pbval b1 s \<or> pbval b2 s)"
+  "pbval (VAR x) s = s x"  |
+  "pbval (NOT b) s = (\<not> pbval b s)" |
+  "pbval (AND b1 b2) s = (pbval b1 s \<and> pbval b2 s)" |
+  "pbval (OR b1 b2) s = (pbval b1 s \<or> pbval b2 s)"
 
 text {* Define a function that checks whether a boolean exression is in NNF
 (negation normal form), i.e., if @{const NOT} is only applied directly
 to @{const VAR}s: *}
 
 fun is_nnf :: "pbexp \<Rightarrow> bool" where
-(* your definition/proof here *)
+  "is_nnf (VAR x) = True" |
+  "is_nnf (NOT (VAR x)) = True" |
+  "is_nnf (NOT e) = False" |
+  "is_nnf (AND l r) = (is_nnf l \<and> is_nnf r)" |
+  "is_nnf (OR l r) = (is_nnf l \<and> is_nnf r)"
 
 text{*
 Now define a function that converts a @{text bexp} into NNF by pushing
@@ -298,17 +314,27 @@ Now define a function that converts a @{text bexp} into NNF by pushing
 *}
 
 fun nnf :: "pbexp \<Rightarrow> pbexp" where
-(* your definition/proof here *)
+  "nnf (VAR x) = (VAR x)" |
+  "nnf (NOT (VAR x)) = (NOT (VAR x))" |
+  "nnf (NOT (NOT e)) = nnf e" |
+  "nnf (NOT (AND l r)) = OR (nnf (NOT l)) (nnf (NOT r))" |
+  "nnf (NOT (OR l r)) = AND (nnf (NOT l)) (nnf (NOT r))" |
+  "nnf (AND l r) = AND (nnf l) (nnf r)" |
+  "nnf (OR l r) = OR (nnf l) (nnf r)"
 
 text{*
 Prove that @{const nnf} does what it is supposed to do:
 *}
 
 lemma pbval_nnf: "pbval (nnf b) s = pbval b s"
-(* your definition/proof here *)
+  apply (induction b rule:nnf.induct)
+  apply (auto)
+done
 
 lemma is_nnf_nnf: "is_nnf (nnf b)"
-(* your definition/proof here *)
+  apply (induction b rule:nnf.induct)
+  apply auto
+done
 
 text{*
 An expression is in DNF (disjunctive normal form) if it is in NNF
