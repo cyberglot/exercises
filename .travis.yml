@@ -1,16 +1,7 @@
-language: misc
 before_install:
-  # Install Coq
-  - sudo apt-get update -yy -q
-  - sudo apt-get install -y coq
-  # Install Isabelle
-  - wget http://isabelle.in.tum.de/dist/Isabelle2013-2_linux.tar.gz
-  - tar xf Isabelle2013-2_linux.tar.gz
-  - ./Isabelle2013-2/bin/isabelle build -bv HOL # Build the logic image
-  - sudo mv Isabelle2013-2 /opt
-  - sudo chown -R root:root /opt/Isabelle2013-2
-  - sudo /opt/Isabelle2013-2/bin/isabelle install /usr/local/bin
+  - bash ./before_install.bash
 script:
-  - make -C "${TRAVIS_BUILD_DIR}/software-foundations" validate
-  - cd "${TRAVIS_BUILD_DIR}/concrete-semantics"
-  - isabelle build -D . -v
+  - make "${EXERCISES}"
+env:
+  - EXERCISES=software-foundations
+  - EXERCISES=concrete-semantics
