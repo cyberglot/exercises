@@ -931,22 +931,8 @@ There is a hard way and an easy way to solve this exercise.
 
 Theorem rev_injective: forall (l1 l2 : natlist), rev l1 = rev l2 -> l1 = l2.
 Proof.
-  intros l1 l2.
-  (* We can't directly apply the hypothesis, since the rev's block us from
-    rewriting, so let's add more rev's to get boths sides into similar shape. *)
-  replace l1 with (rev (rev l1)). replace l2 with (rev (rev l2)).
-  (* Now lets get rid of redundant revs on the left hand side.  Now there are *)
-  (* more revs on the right hand side… *)
-  replace (rev (rev (rev l1))) with (rev l1).
-  replace (rev (rev (rev l2))) with (rev l2).
-  (* …so we can now finally rewrite with the hypothesis. *)
-  intros H. rewrite H. reflexivity.
-  (* Now we only have to prove our replacements, which just follow from *)
-  (* rev being involutive.  *)
-  rewrite rev_involutive. reflexivity.
-  rewrite rev_involutive. reflexivity.
-  rewrite rev_involutive. reflexivity.
-  rewrite rev_involutive. reflexivity.
+  intros l1 l2 H.
+  rewrite <- rev_involutive. rewrite <- H. rewrite rev_involutive. reflexivity.
 Qed.
 (** [] *)
 
