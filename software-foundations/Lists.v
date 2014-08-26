@@ -432,7 +432,7 @@ Proof. reflexivity. Qed.
     you haven't learned yet.  Feel free to ask for help if you get
     stuck! *)
 
-Lemma bag_count_add: forall (n:nat) (s:bag),
+Lemma bag_count_add: forall n: nat, forall s: bag,
                        count n (add n s) = (count n s) + 1.
 Proof.
   intros n s.
@@ -758,13 +758,26 @@ Proof.
 Theorem app_nil_end : forall l : natlist,
   l ++ [] = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l. induction l as [| h t].
+  reflexivity.
+  simpl. rewrite IHt. reflexivity.
+Qed.
 
+Theorem rev_snoc: forall l: natlist, forall n: nat,
+                    rev (snoc l n) = n :: (rev l).
+Proof.
+  intros l n. induction l as [| h t].
+  Case "l = []". reflexivity.
+  Case "l = h::t". simpl. rewrite IHt. reflexivity.
+Qed.
 
 Theorem rev_involutive : forall l : natlist,
   rev (rev l) = l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l. induction l as [| h t].
+  Case "l = []". reflexivity.
+  Case "l = h::t". simpl. rewrite rev_snoc. rewrite IHt. reflexivity.
+Qed.
 
 (** There is a short solution to the next exercise.  If you find
     yourself getting tangled up, step back and try to look for a
@@ -773,25 +786,43 @@ Proof.
 Theorem app_assoc4 : forall l1 l2 l3 l4 : natlist,
   l1 ++ (l2 ++ (l3 ++ l4)) = ((l1 ++ l2) ++ l3) ++ l4.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l1 l2 l3 l4.
+  rewrite app_assoc. rewrite app_assoc. reflexivity.
+Qed.
 
 Theorem snoc_append : forall (l:natlist) (n:nat),
   snoc l n = l ++ [n].
 Proof.
-  (* FILL IN HERE *) Admitted.
-
+  intros l n. induction l as [| h t].
+  Case "l = []". reflexivity.
+  Case "l = h::t". simpl. rewrite IHt. reflexivity.
+Qed.
 
 Theorem distr_rev : forall l1 l2 : natlist,
   rev (l1 ++ l2) = (rev l2) ++ (rev l1).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l1 l2. induction l1 as [| h1 t1].
+  Case "l1 = []". simpl. rewrite app_nil_end. reflexivity.
+  Case "l1 = h1 :: t1".
+  simpl. rewrite IHt1.
+  rewrite snoc_append.          (* Unfold outer snoc *)
+  rewrite app_assoc.            (* Get rid of parenthesis *)
+  rewrite <- snoc_append.       (* Fold appending a single-item list *)
+  reflexivity.
+Qed.
 
 (** An exercise about your implementation of [nonzeros]: *)
 
 Lemma nonzeros_app : forall l1 l2 : natlist,
   nonzeros (l1 ++ l2) = (nonzeros l1) ++ (nonzeros l2).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l1 l2. induction l1 as [| h1 t1].
+  Case "l1 = []". reflexivity.
+  Case "l1 = h1::t1".
+  simpl. destruct h1 as [| h1'].
+  SCase "h1 = 0". rewrite IHt1. reflexivity.
+  SCase "h1 = S h1'". simpl. rewrite IHt1. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (beq_natlist) *)
@@ -800,19 +831,27 @@ Proof.
     yields [true] for every list [l]. *)
 
 Fixpoint beq_natlist (l1 l2 : natlist) : bool :=
-  (* FILL IN HERE *) admit.
+  match l1, l2 with
+    | h1::t1, h2::t2 => andb (beq_nat h1 h2) (beq_natlist t1 t2)
+    | [], [] => true
+    | [], _ => false
+    | _, [] => false
+  end.
 
 Example test_beq_natlist1 :   (beq_natlist nil nil = true).
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_beq_natlist2 :   beq_natlist [1;2;3] [1;2;3] = true.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_beq_natlist3 :   beq_natlist [1;2;3] [1;2;4] = false.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 
 Theorem beq_natlist_refl : forall l:natlist,
   true = beq_natlist l l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l. induction l as [| h t].
+  Case "l = []". reflexivity.
+  Case "l = h::t". simpl. rewrite <- beq_nat_refl. rewrite <- IHt. reflexivity.
+Qed.
 (** [] *)
 
 (* ###################################################### *)
@@ -824,6 +863,16 @@ Proof.
        ([::]), [snoc], and [app] ([++]).
      - Prove it. *)
 
+Theorem app_cons_snoc_app: forall l1 l2: natlist, forall n: nat,
+                             l1 ++ (n :: l2) = (snoc l1 n) ++ l2.
+Proof.
+  intros l1 l2 n.
+  (* Unfold cons on the left hand side *)
+  assert (H: n :: l2 = [n] ++ l2). reflexivity. rewrite H.
+  (* Unfold snoc on the left hand side, and get rid of parenthesis *)
+  rewrite snoc_append. rewrite app_assoc. reflexivity.
+Qed.
+
 (* FILL IN HERE *)
 (** [] *)
 
@@ -834,7 +883,8 @@ Proof.
 Theorem count_member_nonzero : forall (s : bag),
   ble_nat 1 (count 1 (1 :: s)) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros s. reflexivity.
+Qed.
 
 (** The following lemma about [ble_nat] might help you in the next proof. *)
 
@@ -850,14 +900,25 @@ Proof.
 Theorem remove_decreases_count: forall (s : bag),
   ble_nat (count 0 (remove_one 0 s)) (count 0 s) = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros s. induction s as [| h t].
+  Case "s = []". reflexivity.
+  Case "s = h :: t". destruct h as [| h'].
+  SCase "h = 0". simpl. rewrite ble_n_Sn. reflexivity.
+  SCase "h = S h'". simpl. rewrite IHt. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (bag_count_sum) *)
 (** Write down an interesting theorem about bags involving the
     functions [count] and [sum], and prove it.*)
 
-(* FILL IN HERE *)
+Theorem bag_sum_count: forall s1 s2: bag, forall n: nat,
+                         count n (sum s1 s2) = (count n s1) + (count n s2).
+Proof.
+  intros s1 s2 n. induction s1 as [| h1 t1].
+  Case "s1 = []". reflexivity.
+  Case "s1 = h1 :: t1". simpl. rewrite IHt1. rewrite plus_assoc. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 4 stars, advanced (rev_injective) *)
@@ -866,9 +927,27 @@ Proof.
     forall (l1 l2 : natlist), rev l1 = rev l2 -> l1 = l2.
 
 There is a hard way and an easy way to solve this exercise.
-*)
+ *)
 
-(* FILL IN HERE *)
+Theorem rev_injective: forall (l1 l2 : natlist), rev l1 = rev l2 -> l1 = l2.
+Proof.
+  intros l1 l2.
+  (* We can't directly apply the hypothesis, since the rev's block us from
+    rewriting, so let's add more rev's to get boths sides into similar shape. *)
+  replace l1 with (rev (rev l1)). replace l2 with (rev (rev l2)).
+  (* Now lets get rid of redundant revs on the left hand side.  Now there are *)
+  (* more revs on the right hand side… *)
+  replace (rev (rev (rev l1))) with (rev l1).
+  replace (rev (rev (rev l2))) with (rev l2).
+  (* …so we can now finally rewrite with the hypothesis. *)
+  intros H. rewrite H. reflexivity.
+  (* Now we only have to prove our replacements, which just follow from *)
+  (* rev being involutive.  *)
+  rewrite rev_involutive. reflexivity.
+  rewrite rev_involutive. reflexivity.
+  rewrite rev_involutive. reflexivity.
+  rewrite rev_involutive. reflexivity.
+Qed.
 (** [] *)
 
 
