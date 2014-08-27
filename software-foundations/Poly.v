@@ -749,15 +749,15 @@ Proof. reflexivity.  Qed.
     7. *)
 
 Definition filter_even_gt7 (l : list nat) : list nat :=
-  (* FILL IN HERE *) admit.
+  filter (fun n => andb (evenb n) (ble_nat 8 n)) l.
 
 Example test_filter_even_gt7_1 :
   filter_even_gt7 [1;2;6;9;10;3;12;8] = [10;12;8].
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 
 Example test_filter_even_gt7_2 :
   filter_even_gt7 [5;2;6;19;129] = [].
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars (partition) *)
@@ -773,14 +773,13 @@ Example test_filter_even_gt7_2 :
    list.
 *)
 
-Definition partition {X : Type} (test : X -> bool) (l : list X)
-                     : list X * list X :=
-(* FILL IN HERE *) admit.
+Definition partition {X: Type} (test: X -> bool) (l: list X): list X * list X :=
+  (filter test l, filter (fun n => negb (test n)) l).
 
 Example test_partition1: partition oddb [1;2;3;4;5] = ([1;3;5], [2;4]).
-(* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_partition2: partition (fun x => false) [5;9;0] = ([], [5;9;0]).
-(* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 (** [] *)
 
 (* ###################################################### *)
@@ -827,11 +826,21 @@ Proof. reflexivity.  Qed.
 (** Show that [map] and [rev] commute.  You may need to define an
     auxiliary lemma. *)
 
+Lemma map_snoc: forall (X Y: Type) (f: X -> Y) (l: list X) (x: X),
+                  map f (snoc l x) = snoc (map f l) (f x).
+Proof.
+  intros X Y f l x. induction l as [| h t].
+  Case "l = []". reflexivity.
+  Case "l = h :: t". simpl. rewrite IHt. reflexivity.
+Qed.
 
 Theorem map_rev : forall (X Y : Type) (f : X -> Y) (l : list X),
   map f (rev l) = rev (map f l).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X Y f l. induction l as [| h t].
+  Case "l = []". reflexivity.
+  Case "l = h :: t". simpl. rewrite map_snoc. rewrite IHt. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (flat_map) *)
@@ -844,14 +853,16 @@ Proof.
       = [1; 2; 3; 5; 6; 7; 10; 11; 12].
 *)
 
-Fixpoint flat_map {X Y:Type} (f:X -> list Y) (l:list X)
-                   : (list Y) :=
-  (* FILL IN HERE *) admit.
+Fixpoint flat_map {X Y: Type} (f:X -> list Y) (l: list X): (list Y) :=
+  match l with
+    | [] => []
+    | h :: t => (f h) ++ (flat_map f t)
+  end.
 
 Example test_flat_map1:
   flat_map (fun n => [n;n;n]) [1;5;4]
   = [1; 1; 1; 5; 5; 5; 4; 4; 4].
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 (** [] *)
 
 (** Lists are not the only inductive type that we can write a
