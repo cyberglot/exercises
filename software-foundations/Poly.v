@@ -479,7 +479,9 @@ Fixpoint combine {X Y : Type} (lx : list X) (ly : list Y)
     - What does
         Eval compute in (combine [1;2] [false;false;true;true]).
       print?   []
-*)
+ *)
+Check @combine.
+Eval compute in (combine [1;2] [false;false;true;true]).
 
 (** **** Exercise: 2 stars (split) *)
 (** The function [split] is the right inverse of combine: it takes a
@@ -489,15 +491,15 @@ Fixpoint combine {X Y : Type} (lx : list X) (ly : list Y)
     Uncomment the material below and fill in the definition of
     [split].  Make sure it passes the given unit tests. *)
 
-Fixpoint split
-           {X Y : Type} (l : list (X*Y))
-           : (list X) * (list Y) :=
-(* FILL IN HERE *) admit.
+Fixpoint split {X Y : Type} (l : list (X*Y)) : (list X) * (list Y) :=
+  match l with
+    | [] => ([], [])
+    | (h1, h2) :: t => (h1 :: fst (split t), h2 :: snd (split t))
+  end.
 
 Example test_split:
   split [(1,false);(2,false)] = ([1;2],[false;false]).
-Proof.
-(* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 (** [] *)
 
 (* ###################################################### *)
@@ -538,7 +540,10 @@ Proof. reflexivity.  Qed.
     passes the unit tests below. *)
 
 Definition hd_opt {X : Type} (l : list X)  : option X :=
-  (* FILL IN HERE *) admit.
+  match l with
+    | [] => None
+    | h::_ => Some h
+  end.
 
 (** Once again, to force the implicit arguments to be explicit,
     we can use [@] before the name of the function. *)
@@ -546,9 +551,9 @@ Definition hd_opt {X : Type} (l : list X)  : option X :=
 Check @hd_opt.
 
 Example test_hd_opt1 :  hd_opt [1;2] = Some 1.
- (* FILL IN HERE *) Admitted.
+Proof.  reflexivity. Qed.
 Example test_hd_opt2 :   hd_opt  [[1];[2]]  = Some [1].
- (* FILL IN HERE *) Admitted.
+Proof.  reflexivity. Qed.
 (** [] *)
 
 (* ###################################################### *)
